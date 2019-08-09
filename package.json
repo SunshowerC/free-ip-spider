@@ -4,10 +4,9 @@
   "description": "",
   "scripts": {
     "lint": "eslint --fix 'src/**/*.{ts,tsx,js,jsx}'",
-    "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "prod": "npm run build && node ./dist/src/main.js",
-    "sp": "ts-node -r tsconfig-paths/register src/ip-spider.ts",
-    "prod:sp": "npm run build && node ./dist/src/ip-spider.js",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start:prod": "npm run build && node ./dist/src/main.js",
     "test": "ts-node -r tsconfig-paths/register src/utils/test-ip.ts",
     "build": "rm -rf ./dist/ && tsc -p tsconfig.json",
     "ts": "ts-node -r tsconfig-paths/register ./logs/test.ts"

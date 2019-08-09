@@ -29,31 +29,3 @@ export const saveIps = async (connnect: Connection, ips: Partial<IpEntity>[]) =>
   })
   return saveRes
 }
-
-// 获取ip
-export const getOneIp = async (connection: Connection) => {
-  const ipRepo = connection.getRepository(IpEntity)
-  // const qb = ipRepo.createQueryBuilder()
-  const result: IpEntity[] = await ipRepo.query(`
-    SELECT * 
-    FROM ip_tab
-    ORDER BY RAND()
-    limit 1;
-  `)
-  // const result = qb
-  //   .select()
-  //   // .andWhere(`origin REGEXP '移动|联通|电信|广电|通'`)
-  //   .orderBy({
-  //     createtimestamp: `DESC`
-  //   })
-  //   .getOne()
-
-  return result[0]
-}
-// 删除ip
-export const deleteIpById = async (connection: Connection, id: number) => {
-  const ipRepo = connection.getRepository(IpEntity)
-  return ipRepo.delete({
-    id
-  })
-}

@@ -31,7 +31,9 @@ async function main() {
     getIpFromKuai(kuaiPage, connection).catch((e) => logger.error('kuaiPage err', { e })),
     getIpFromXici(xiciPage, connection).catch((e) => logger.error('xiciPage err', { e })),
     getIpFromQiyun(qiyunPage, connection).catch((e) => logger.error('qiyunPage err', { e }))
-  ])
+  ]).catch((e) => {
+    console.log('eeeeeee', e)
+  })
 
   logger.info('全网站爬取完毕')
   browser.close()

@@ -29,7 +29,8 @@ const logger = createLogger({
     }),
     format.splat(), // 可以使用 %d %s
     // format.printf((info) => `[${info.timestamp}] ${info.message}`)
-    format.prettyPrint() // json 换行
+    // format.prettyPrint() // json 换行
+    format.simple()
     // format.json(), // json 格式
   ),
   // defaultMeta: { service: 'Bussiness logger' },

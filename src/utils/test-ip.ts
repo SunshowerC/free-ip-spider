@@ -71,6 +71,7 @@ export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
 }
 
 export const saveAvaliableIps = async (connection: Connection, ips: string[]): Promise<number> => {
+  // TODO: 一次校验太多 ip，可能会导致 CONNECTREST， 切割成每次只测试 10 个ip
   const allValidProm = ips.map((curIp) => testIp(curIp))
 
   // 带校验结果的所有 ip

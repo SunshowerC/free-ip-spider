@@ -6,16 +6,16 @@ import { spiderKuai } from './spider-task/spider-kuai'
 import { spiderXici } from './spider-task/spider-xici'
 import { spiderQiyun } from './spider-task/spider-qiyun'
 
-async function main() {
+const main = async () => {
   const connection = await createConnection(ormconfig)
 
   logger.info('已打开页面')
 
   await Promise.all([
-    spiderXila(connection).catch((e) => logger.error('xila err', { e })),
-    spiderKuai(connection).catch((e) => logger.error('kuaiPage err', { e })),
-    spiderXici(connection).catch((e) => logger.error('xiciPage err', { e })),
-    spiderQiyun(connection).catch((e) => logger.error('qiyunPage err', { e }))
+    spiderXila(connection),
+    spiderKuai(connection),
+    spiderXici(connection),
+    spiderQiyun(connection)
   ]).catch((e) => {
     console.log('eeeeeee', e)
   })

@@ -39,7 +39,7 @@ export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
           const logType = valid ? 'info' : 'warn'
 
           logger[logType](`${ip} validate result:${valid}`, {
-            body: valid ? `CannotParseIP: ${body}` : undefined
+            body: valid ? undefined : `CannotParseIP: ${body}`
           })
           resolve(
             valid

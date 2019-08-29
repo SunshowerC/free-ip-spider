@@ -15,24 +15,31 @@ export interface GetIpParams {
 export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, label }: GetIpParams) {
   // 自增页码
   let i = 0
+  /* eslint-disable */
   while (true) {
     const curPage = getIpPage(++i)
 
     const ips = await new Promise<string[]>((resolve, reject) => {
-      request.get(curPage, (error, response, body) => {
-        if (error) {
-          logger.warn(`Error: 获取`, {
-            error: error.code
-          })
+      request.get(
+        curPage,
+        {
+          timeout: 10000
+        },
+        (error, response, body) => {
+          if (error) {
+            logger.warn(`Error: 获取`, {
+              error: error.code
+            })
 
-          reject(new Error('爬取页面错误'))
+            reject(new Error('爬取页面错误'))
+          }
+
+          const doc = new JSDOM(body).window.document
+
+          const ipsFromDom = parseIpFromDoc(doc)
+          resolve(ipsFromDom)
         }
-
-        const doc = new JSDOM(body).window.document
-
-        const ipsFromDom = parseIpFromDoc(doc)
-        resolve(ipsFromDom)
-      })
+      )
     })
 
     const avaliableLen = await saveAvaliableIps(connection, ips)

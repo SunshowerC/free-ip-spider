@@ -3,6 +3,7 @@ import { Connection } from 'typeorm'
 import logger from '../services/logger'
 import { IpEntity } from '../../config/entities/ip.entity'
 import { saveIps } from '../services/ip.service'
+import { sleep } from './common'
 
 export type TestResult = Pick<IpEntity, 'addr' | 'origin'>
 
@@ -11,10 +12,11 @@ const testPath = `https://icanhazip.com/`
 // const testPath = `http://www.ip.cn`
 
 // const testPath = `http://200019.ip138.com/`  // 带地区的
-
+let count = 0
 export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
   const ip = proxyAddr.startsWith('http') ? proxyAddr : `http://${proxyAddr}`
-  return new Promise((resolve) => {
+
+  const testResult = new Promise<TestResult | null>((resolve) => {
     request.get(
       testPath,
       {
@@ -22,24 +24,20 @@ export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
         timeout: 20000
       },
       (error, response, body) => {
-        const origin = ''
-
         // console.log('bobey', body)
         if (error) {
           logger.warn(`${ip} testIp failed`, {
             error: error.code
           })
-          resolve({
-            addr: ip,
-            origin
-          })
+          resolve(null)
         } else {
           // `http://icanhazip.com/`
           const valid = ip.includes(body.trim())
           const logType = valid ? 'info' : 'warn'
 
           logger[logType](`${ip} validate result:${valid}`, {
-            body: valid ? undefined : `CannotParseIP: ${body}`
+            body: valid ? undefined : `CannotParseIP: ${body}`,
+            count: valid ? ++count : count
           })
           resolve(
             valid
@@ -68,14 +66,31 @@ export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
       }
     )
   })
+
+  const timeoutResult = new Promise<null>((resolve) => {
+    sleep(60000).then(() => resolve(null))
+  })
+
+  return Promise.race([testResult, timeoutResult])
 }
 
+/**
+ * 测试 ip，保存有效 ip 到数据库
+ */
 export const saveAvaliableIps = async (connection: Connection, ips: string[]): Promise<number> => {
-  // TODO: 一次校验太多 ip，可能会导致 CONNECTREST， 切割成每次只测试 10 个ip
+  logger.info(`ips length: ${ips.length}`, ips)
   const allValidProm = ips.map((curIp) => testIp(curIp))
+  const allIpsWithAvaliable = await Promise.all(allValidProm)
+
+  // 串行阻塞操作
+  // const allIpsWithAvaliable:any[] = []
+  // for(let curIp of ips) {
+  //   console.log('curU', curIp)
+  //   const res = await testIp(curIp)
+  //   allIpsWithAvaliable.push(res)
+  // }
 
   // 带校验结果的所有 ip
-  const allIpsWithAvaliable = await Promise.all(allValidProm)
   // 有效的 ip
   const avaliableIps = allIpsWithAvaliable.filter(Boolean) as Pick<IpEntity, 'addr' | 'origin'>[]
 

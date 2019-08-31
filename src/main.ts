@@ -1,42 +1,26 @@
 import { createConnection } from 'typeorm'
-import puppeteer from 'puppeteer'
+import { throttle } from 'lodash'
 import { ormconfig } from '../config/ormconfig'
-import { getIpFromXila } from './spider-task/spider-ip-xila'
-import { getIpFromKuai } from './spider-task/spider-ip-kuai'
-import { getIpFromXici } from './spider-task/spider-ip-xici'
-import { getIpFromQiyun } from './spider-task/spider-ip-qiyun'
 import logger from './services/logger'
+import { spiderXila } from './spider-task/spider-xila'
+import { spiderKuai } from './spider-task/spider-kuai'
+import { spiderXici } from './spider-task/spider-xici'
+import { spiderQiyun } from './spider-task/spider-qiyun'
 
-async function main() {
+const main = async () => {
   const connection = await createConnection(ormconfig)
-  const browser = await puppeteer.launch({
-    // headless: false,
-    // slowMo: 300,
-    defaultViewport: {
-      width: 1200,
-      height: 800
-    }
-    // devtools: true
-  })
 
-  const xilaPage = await browser.newPage()
-  const kuaiPage = await browser.newPage()
-  const xiciPage = await browser.newPage()
-  const qiyunPage = await browser.newPage()
-
-  logger.info('已打开页面')
-
-  await Promise.all([
-    getIpFromXila(xilaPage, connection).catch((e) => logger.error('xila err', { e })),
-    getIpFromKuai(kuaiPage, connection).catch((e) => logger.error('kuaiPage err', { e })),
-    getIpFromXici(xiciPage, connection).catch((e) => logger.error('xiciPage err', { e })),
-    getIpFromQiyun(qiyunPage, connection).catch((e) => logger.error('qiyunPage err', { e }))
-  ]).catch((e) => {
-    console.log('eeeeeee', e)
-  })
+  await spiderXila(connection)
+  await spiderKuai(connection)
+  await spiderXici(connection)
+  await spiderQiyun(connection)
 
   logger.info('全网站爬取完毕')
-  browser.close()
 }
 
-main()
+// 避免太频繁爬数据，保持在 1 小时内只爬一次数据
+const oneHour = 60 * 60 * 1000
+const throttleMain = throttle(main, oneHour)
+
+throttleMain()
+setInterval(throttleMain, 10 * 60 * 1000)

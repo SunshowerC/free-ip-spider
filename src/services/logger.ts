@@ -29,7 +29,8 @@ const logger = createLogger({
     }),
     format.splat(), // 可以使用 %d %s
     // format.printf((info) => `[${info.timestamp}] ${info.message}`)
-    format.prettyPrint() // json 换行
+    // format.prettyPrint() // json 换行
+    format.simple()
     // format.json(), // json 格式
   ),
   // defaultMeta: { service: 'Bussiness logger' },
@@ -37,10 +38,12 @@ const logger = createLogger({
   // 如果是本地环境，抛出打印出错误信息。否则会被Winston 捕获并日志
   // exceptionHandlers:  [rotateTransports[0]]
 })
-logger.add(
-  new transports.Console({
-    format: format.combine(format.colorize(), format.simple())
-  })
-)
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(
+    new transports.Console({
+      format: format.combine(format.colorize(), format.simple())
+    })
+  )
+}
 
 export default logger

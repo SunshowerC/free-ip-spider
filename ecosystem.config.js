@@ -10,7 +10,7 @@ module.exports = {
       log_date_format: 'YYYY-MM-DD HH:mm',
       merge_logs: true,
       exec_mode: 'cluster',
-      env_production: {
+      env: {
         NODE_ENV: 'production'
       },
       max_memory_restart: '1G',

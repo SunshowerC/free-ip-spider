@@ -78,7 +78,7 @@ export const testIp = async (proxyAddr: string): Promise<TestResult | null> => {
  * 测试 ip，保存有效 ip 到数据库
  */
 export const saveAvaliableIps = async (connection: Connection, ips: string[]): Promise<number> => {
-  logger.info(`ips length: ${ips.length}`, ips)
+  logger.info(`准备校验 ips length: ${ips.length}`, ips)
   const allValidProm = ips.map((curIp) => testIp(curIp))
   const allIpsWithAvaliable = await Promise.all(allValidProm)
 

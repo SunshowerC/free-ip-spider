@@ -1,8 +1,8 @@
 import request from 'request'
 import { JSDOM } from 'jsdom'
 import { Connection } from 'typeorm'
-import { saveAvaliableIps } from 'src/utils/test-ip'
-import { sleep } from 'src/utils/common'
+import { saveAvaliableIps } from '../utils/test-ip'
+import { sleep } from '../utils/common'
 import logger from '../services/logger'
 
 export interface GetIpParams {
@@ -37,6 +37,11 @@ export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, labe
           const doc = new JSDOM(body).window.document
 
           const ipsFromDom = parseIpFromDoc(doc)
+          if(ipsFromDom.length === 0 ) {
+            logger.error('爬取数据异常', {
+              body
+            })
+          }
           resolve(ipsFromDom)
         }
       )

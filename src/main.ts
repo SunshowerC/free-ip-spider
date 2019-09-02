@@ -22,5 +22,10 @@ const main = async () => {
 const oneHour = 60 * 60 * 1000
 const throttleMain = throttle(main, oneHour)
 
-throttleMain()
+throttleMain().catch((e) => {
+  console.log('eroreroerr', e)
+  logger.error('未捕获异常', {
+    e
+  })
+})
 setInterval(throttleMain, 10 * 60 * 1000)

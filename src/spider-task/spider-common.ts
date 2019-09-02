@@ -19,7 +19,7 @@ export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, labe
   while (true) {
     const curPage = getIpPage(++i)
 
-    const ips = await new Promise<string[]>((resolve, reject) => {
+    const ips = await new Promise<string[]|null>((resolve, reject) => {
       request.get(
         curPage,
         {
@@ -31,7 +31,7 @@ export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, labe
               error: error.code
             })
 
-            reject(new Error('爬取页面错误'))
+            resolve(null)
           }
 
           const doc = new JSDOM(body).window.document
@@ -46,6 +46,10 @@ export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, labe
         }
       )
     })
+
+    if(!ips) {
+      return false;
+    }
 
     const avaliableLen = await saveAvaliableIps(connection, ips)
 

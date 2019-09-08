@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm'
+import { createConnection, Connection } from 'typeorm'
 import { throttle } from 'lodash'
 import { ormconfig } from '../config/ormconfig'
 import logger from './services/logger'
@@ -7,8 +7,11 @@ import { spiderKuai } from './spider-task/spider-kuai'
 import { spiderXici } from './spider-task/spider-xici'
 import { spiderQiyun } from './spider-task/spider-qiyun'
 
+let connection: Connection | undefined
+
 const main = async () => {
-  const connection = await createConnection(ormconfig)
+  // 创建一次连接即可
+  connection = connection || (await createConnection(ormconfig))
 
   await spiderXila(connection)
   await spiderKuai(connection)

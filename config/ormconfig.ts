@@ -8,7 +8,7 @@ export const ormconfig: ConnectionOptions = {
   type: 'mysql',
   entities: [ resolve(__dirname, `entities/*.entity{.ts,.js}`) ],
   // subscribers: [`${locationPath}/**/*.subscriber{.ts,.js}`],
-  synchronize: true,
+  synchronize: false,
   logging: ['error', 'query'],
   logger: new OrmLogger('all'),
   maxQueryExecutionTime: 1000,

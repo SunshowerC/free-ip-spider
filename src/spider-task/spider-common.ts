@@ -39,7 +39,8 @@ export async function getIpFromWeb({ getIpPage, parseIpFromDoc, connection, labe
           const ipsFromDom = parseIpFromDoc(doc)
           if(ipsFromDom.length === 0 ) {
             logger.error('爬取数据异常', {
-              body
+              body,
+              curPage
             })
           }
           resolve(ipsFromDom)

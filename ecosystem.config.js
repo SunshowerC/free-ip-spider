@@ -7,7 +7,7 @@ module.exports = {
 
       autorestart: true,
       watch: false,
-      log_date_format: 'YYYY-MM-DD HH:mm',
+      log_date_format: 'YYYY-MM-DD HH:mm Z',
       merge_logs: true,
       exec_mode: 'cluster',
       env: {
